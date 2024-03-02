@@ -1,0 +1,39 @@
+from pathlib import Path
+from typing import Tuple
+
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+
+# Start and end Index of data used for testing
+TEST_INDEX_START = 4380
+TEST_INDEX_END = 8500
+
+BATTERY_CAPACITY = 400
+BATTERY_POWER = 100
+
+
+def read_data(data_dir) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    load = pd.read_csv(f"{data_dir}/electricity_load_profile.csv")["Load [kWh]"]
+    price = pd.read_csv(f"{data_dir}/electricity_price_profile.csv")[
+        "Day Ahead Auction"
+    ]
+    generation = pd.read_csv(f"{data_dir}/solar_generation_profile.csv")[
+        "Generation [kWh]"
+    ]
+    return np.array(load), np.array(price), np.array(generation)
+
+
+def plot_control_trajectory(
+    residual_load, augmented_load, price, battery_power
+) -> None:
+    ax = plt.subplot()
+    ax.plot(residual_load, label="Residual Load")
+    ax.plot(augmented_load, label="Augmented Load")
+    ax.plot(price, "--", label="Price")
+    ax.plot(battery_power, label="Battery Power")
+    plt.ylabel("Load and Battery Power Applied (kW) & Price (Cent per kWh)")
+    plt.xlabel("Time Step")
+    ax.legend()
+    ax.grid()
+    plt.show()

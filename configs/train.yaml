@@ -1,0 +1,26 @@
+defaults:
+  - _self_
+
+seed: 70
+
+paths:
+  base_dir: /home/ksuchoi216/tsf
+  data_dir: "${paths.base_dir}/data/pv"
+  output_dir: "${paths.base_dir}/outputs"
+  log_dir: "${paths.base_dir}/logs"
+  ckpt_dir: "${paths.base_dir}/outputs/checkpoints"
+  ckpt_path: "${paths.base_dir}/outputs/checkpoints/last.ckpt"
+  draw_dir: "${paths.base_dir}/plots"
+  # log_dir: "${root_dir}/logs"
+  # output_dir: ${hydra:runtime.output_dir}
+  # work_dir: ${hydra:runtime.cwd}
+  # save_dir: "${root_dir}/save"
+
+mlflow:
+  url: http://192.168.1.100:25001
+  experiment_name: null
+  added_name: null
+
+train: True
+test: False
+resume: False
