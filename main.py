@@ -4,7 +4,7 @@ from src import environment
 from src import utils
 import lightning as L
 
-from stable_baselines3 import SAC
+from stable_baselines3 import SAC, PPO
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
@@ -15,7 +15,7 @@ TEST_INDEX_END = 8500
 BATTERY_CAPACITY = 400
 BATTERY_POWER = 100
 NUM_FORECAST_STEPS = 8
-RESULT_PATH = "rl_example/"
+RESULT_PATH = "outputs/"
 
 
 def execute(cfg: DictConfig):
@@ -41,16 +41,19 @@ def execute(cfg: DictConfig):
         max_timesteps=len(load_train) - NUM_FORECAST_STEPS,
     )
     env = utils.ObservationWrapper(env, NUM_FORECAST_STEPS)
+
     initial_obs, info = env.reset()
-    print(initial_obs)
+    log.info(f"Initial observation: \n{initial_obs}")
 
     env = Monitor(env, filename=RESULT_PATH)
     env = DummyVecEnv([lambda: env])
     env = VecNormalize(env, norm_obs=True, norm_reward=True)
 
     # Train :-)
-    model = SAC("MlpPolicy", env, verbose=1, gamma=0.95)
-    model.learn(total_timesteps=200_000)
+    # model = SAC("MlpPolicy", env, verbose=1, gamma=0.95)
+    model = PPO("MlpPolicy", env, verbose=1)
+    log.info("Training the model")
+    model.learn(total_timesteps=10_000)
     # Store the trained Model and environment stats (which are needed as we are standardizing the observations and
     # reward using VecNormalize())
     model.save(RESULT_PATH + "model")
